@@ -1,0 +1,2 @@
+# soptai
+sopt-ai-assignment
