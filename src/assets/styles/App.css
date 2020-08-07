@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@import url('https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css');
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
+@import url('https://cdn.jsdelivr.net/npm/vuetify@2.3.8/dist/vuetify.min.css');
+
+.center {
+    text-align: center;
+  }
