@@ -23,9 +23,13 @@
         </form>
       </md-dialog>
       <div class="lists">
+        
         <div class="left">
           <h2 class="center">Newly added To-Do Tasks</h2>
-          <draggable v-model="todo" group="tasks" @change="updateTodo">
+          <draggable 
+          v-model="todo" 
+          group="tasks" 
+          @change="updateTodo">
            
             <div v-for="t in todo" :key="t.id" class="item" >
               <b>{{t.description}}</b>
@@ -35,10 +39,14 @@
 
           </draggable>
         </div>
+        <v-btn class="ma-2" @click="enableSort = !enableSort" color="md-accent">Sort</v-btn>
         <div class="right">
           <h2 class="center">Completed To-Do Tasks</h2>
-          <draggable v-model="done" group="tasks" @change="updateTodo">
-            <div v-for="d in done" :key="d.id" class="item" >
+          <draggable class="scroller"
+          v-model="done" 
+          group="tasks"
+          @change="updateTodo; sortedItems">
+            <div :done="sortedItems" v-for="d in done" :key="d.description" class="item" >
               <b><strike>
                 {{d.description}}
                 </strike></b>
@@ -48,6 +56,7 @@
             </div>
             
           </draggable>
+          
         </div>
       </div>
     </div>
@@ -65,7 +74,17 @@ export default {
   computed: {
     isFormDirty() {
       return Object.keys(this.fields).some(key => this.fields[key].dirty);
-    }
+    },
+    sortedItems () {
+    	if (this.enableSort) {       
+        return this.done.slice(0).sort((a, b) => {
+          window.console.log(this.done);
+           a.description < b.description ? this.sorting : -this.sorting;
+        })        
+     	} else {
+    		return this.done
+      }
+    },
   },
   mixins: [todoMixin],
   data() {
@@ -73,6 +92,8 @@ export default {
       todo: [],
       done: [],
       showDialog: false,
+      enableSort: false,
+  	  sorting: -1,
       taskData: {},
        icons: {
         mdiDelete,
@@ -104,9 +125,7 @@ export default {
         await this.editTodo(todo);
       }
     },    async deleteTask(id) {
-      // window.console.log("Task With Id " + id + " Deleted/Completed Successfully");
       const todo = await this.deleteTodo(id);
-      window.console.log(todo);      
       this.getNewTodos();
     }
   }
