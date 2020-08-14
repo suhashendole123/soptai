@@ -99,15 +99,6 @@ export default {
   beforeMount() {
     this.getNewTodos();
   },
-   render (h) {
-        return h('draggable', { 
-            props: { ...this.$attrs, value: this.list },
-            on: { input: ($event) => { this.list = $event } }
-        }, this.list.map(el => {
-           el.vnode.key = el.id
-           return el.vnode
-        }))
-    },
   methods: {
     async addNewTodo(evt) {
       evt.preventDefault();
