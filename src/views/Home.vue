@@ -22,41 +22,35 @@
           </md-dialog-actions>
         </form>
       </md-dialog>
-      <div class="lists">
-        
+      <div class="lists">        
         <div class="left">
           <h2 class="center">Newly added To-Do Tasks</h2>
           <draggable 
           v-model="todo" 
           group="tasks" 
-          @change="updateTodo">
-           
+          @change="updateTodo">           
             <div v-for="t in todo" :key="t.id" class="item" >
               <b>{{t.description}}</b>
               <v-btn color="md-primary"  @click="deleteTask(t.id)">
                 <v-icon left>{{ icons.mdiDelete }}</v-icon>Delete</v-btn>
             </div>
-
           </draggable>
         </div>
-        <v-btn class="ma-2" @click="enableSort = !enableSort" color="md-accent">Sort</v-btn>
         <div class="right">
           <h2 class="center">Completed To-Do Tasks</h2>
           <draggable class="scroller"
-          v-model="done" 
-          group="tasks"
-          @change="updateTodo; sortedItems">
-            <div :done="sortedItems" v-for="d in done" :key="d.description" class="item" >
+            v-model="done" 
+            group="tasks"
+            @change="updateTodo">
+            <div v-for="d in sortedItems" :key="d.id" class="item" >
               <b><strike>
                 {{d.description}}
                 </strike></b>
               <v-btn class="ma-2" @click="deleteTask(d.id)" color="md-accent">Completed
-        <v-icon right>mdi-checkbox-marked-circle</v-icon>
-      </v-btn>
-            </div>
-            
-          </draggable>
-          
+                <v-icon right>mdi-checkbox-marked-circle</v-icon>
+              </v-btn>
+            </div>            
+          </draggable>          
         </div>
       </div>
     </div>
@@ -75,16 +69,17 @@ export default {
     isFormDirty() {
       return Object.keys(this.fields).some(key => this.fields[key].dirty);
     },
-    sortedItems () {
-    	if (this.enableSort) {       
-        return this.done.slice(0).sort((a, b) => {
-          window.console.log(this.done);
-           a.description < b.description ? this.sorting : -this.sorting;
-        })        
-     	} else {
-    		return this.done
+    // Manual sort for droppable items
+    sortedItems: function() {
+      function compare(a, b) {
+        if (a.description < b.description)
+          return -1;
+        if (a.description > b.description)
+          return 1;
+        return 0;
       }
-    },
+      return JSON.parse(JSON.stringify(this.done)).sort(compare);
+    }
   },
   mixins: [todoMixin],
   data() {
@@ -116,16 +111,18 @@ export default {
     },    async getNewTodos() {
       const response = await this.getTodos();
       this.todo = response.data.filter(t => !t.done);
-      window.console.log(this.todo);
       this.done = response.data.filter(t => t.done);
-    },    async updateTodo(evt) {
+    },
+    async updateTodo(evt) {
       let todo = evt.removed && evt.removed.element;
       if (todo) {
         todo.done = !todo.done;
         await this.editTodo(todo);
       }
     },    async deleteTask(id) {
+      // window.console.log("Task With Id " + id + " Deleted/Completed Successfully");
       const todo = await this.deleteTodo(id);
+      window.console.log(todo);      
       this.getNewTodos();
     }
   }
