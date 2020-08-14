@@ -86,6 +86,7 @@ export default {
     return {
       todo: [],
       done: [],
+       list: [],
       showDialog: false,
       enableSort: false,
   	  sorting: -1,
@@ -98,6 +99,15 @@ export default {
   beforeMount() {
     this.getNewTodos();
   },
+   render (h) {
+        return h('draggable', { 
+            props: { ...this.$attrs, value: this.list },
+            on: { input: ($event) => { this.list = $event } }
+        }, this.list.map(el => {
+           el.vnode.key = el.id
+           return el.vnode
+        }))
+    },
   methods: {
     async addNewTodo(evt) {
       evt.preventDefault();
@@ -115,15 +125,27 @@ export default {
     },
     async updateTodo(evt) {
       let todo = evt.removed && evt.removed.element;
+      
       if (todo) {
         todo.done = !todo.done;
         await this.editTodo(todo);
       }
+
+      if(evt.removed){
+        window.console.log("Removed "+ evt.removed.element.description );
+        window.console.log(evt);
+      }else if(evt.added){
+        window.console.log("Added " + evt.added.element.description);
+        window.console.log(evt);
+      }       
     },    async deleteTask(id) {
       // window.console.log("Task With Id " + id + " Deleted/Completed Successfully");
       const todo = await this.deleteTodo(id);
       window.console.log(todo);      
       this.getNewTodos();
+    },
+    log: function(evt) {
+      window.console.log(evt);
     }
   }
 };
