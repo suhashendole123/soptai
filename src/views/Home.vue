@@ -22,32 +22,35 @@
           </md-dialog-actions>
         </form>
       </md-dialog>
-      <div class="lists">
+      <div class="lists">        
         <div class="left">
           <h2 class="center">Newly added To-Do Tasks</h2>
-          <draggable v-model="todo" group="tasks" @change="updateTodo">
-           
+          <draggable 
+          v-model="todo" 
+          group="tasks" 
+          @change="updateTodo">           
             <div v-for="t in todo" :key="t.id" class="item" >
               <b>{{t.description}}</b>
               <v-btn color="md-primary"  @click="deleteTask(t.id)">
                 <v-icon left>{{ icons.mdiDelete }}</v-icon>Delete</v-btn>
             </div>
-
           </draggable>
         </div>
         <div class="right">
           <h2 class="center">Completed To-Do Tasks</h2>
-          <draggable v-model="done" group="tasks" @change="updateTodo">
-            <div v-for="d in done" :key="d.id" class="item" >
+          <draggable class="scroller"
+            v-model="done" 
+            group="tasks"
+            @change="updateTodo">
+            <div v-for="d in sortedItems" :key="d.id" class="item" >
               <b><strike>
                 {{d.description}}
                 </strike></b>
               <v-btn class="ma-2" @click="deleteTask(d.id)" color="md-accent">Completed
-        <v-icon right>mdi-checkbox-marked-circle</v-icon>
-      </v-btn>
-            </div>
-            
-          </draggable>
+                <v-icon right>mdi-checkbox-marked-circle</v-icon>
+              </v-btn>
+            </div>            
+          </draggable>          
         </div>
       </div>
     </div>
@@ -65,6 +68,17 @@ export default {
   computed: {
     isFormDirty() {
       return Object.keys(this.fields).some(key => this.fields[key].dirty);
+    },
+    // Manual sort for droppable items
+    sortedItems: function() {
+      function compare(a, b) {
+        if (a.description < b.description)
+          return -1;
+        if (a.description > b.description)
+          return 1;
+        return 0;
+      }
+      return JSON.parse(JSON.stringify(this.done)).sort(compare);
     }
   },
   mixins: [todoMixin],
@@ -73,6 +87,8 @@ export default {
       todo: [],
       done: [],
       showDialog: false,
+      enableSort: false,
+  	  sorting: -1,
       taskData: {},
        icons: {
         mdiDelete,
@@ -95,9 +111,9 @@ export default {
     },    async getNewTodos() {
       const response = await this.getTodos();
       this.todo = response.data.filter(t => !t.done);
-      window.console.log(this.todo);
       this.done = response.data.filter(t => t.done);
-    },    async updateTodo(evt) {
+    },
+    async updateTodo(evt) {
       let todo = evt.removed && evt.removed.element;
       if (todo) {
         todo.done = !todo.done;
