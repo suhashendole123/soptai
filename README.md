@@ -21,6 +21,7 @@ npm i -g json-server
 ```
 json-server --watch db.json
 ```
+## Additional option of LocalStorage is added to access data quickly without setup of any json server
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

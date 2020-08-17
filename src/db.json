@@ -12,16 +12,18 @@
     },
     {
       "description": "Check new Mobile phone",
-      "id": 9
+      "id": 9,
+      "done": true
     },
     {
       "description": "Invite parents",
       "id": 11,
-      "done": true
+      "done": false
     },
     {
       "description": "Join meeting in 5 minutes",
-      "id": 12
+      "id": 12,
+      "done": true
     },
     {
       "description": "Order food",
@@ -38,7 +40,8 @@
     },
     {
       "description": "Get chocolates for christmas",
-      "id": 17
+      "id": 17,
+      "done": true
     },
     {
       "description": "Get cake",
